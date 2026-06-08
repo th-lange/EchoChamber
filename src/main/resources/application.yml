@@ -1,0 +1,18 @@
+spring:
+  data:
+    rest:
+      base-path: /api
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:echochamber}
+    username: ${DB_USER:echochamber}
+    password: ${DB_PASSWORD:echochamber}
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  level:
+    com.echochamber: INFO

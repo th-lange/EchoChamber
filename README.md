@@ -31,6 +31,76 @@ The core problems it solves:
 
 ---
 
+## Getting started
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) and Docker Compose
+- JDK 21+ (only needed if running outside Docker)
+
+### 1. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and set a strong value for `INTERNAL_INGEST_TOKEN`. The database defaults (`localhost:5432`, db/user/password all `echochamber`) work out of the box with Docker Compose.
+
+### 2. Start with Docker Compose
+
+```bash
+docker compose up --build
+```
+
+This starts:
+- **PostgreSQL 15** on `localhost:5432`
+- **EchoChamber** on `http://localhost:8080`
+
+### 3. Run locally (without Docker)
+
+Start only the database, then run the app via Gradle:
+
+```bash
+docker compose up -d postgres
+./gradlew bootRun
+```
+
+### Key endpoints
+
+| URL | Description |
+|---|---|
+| `http://localhost:8080/swagger-ui.html` | Swagger UI — interactive API docs |
+| `http://localhost:8080/v3/api-docs` | OpenAPI JSON spec |
+| `http://localhost:8080/api/explorer` | HAL Explorer — browse all Spring Data REST resources |
+| `http://localhost:8080/api/capturedRequests` | Browse captured requests |
+| `http://localhost:8080/api/executionConfigs` | Manage replay configs |
+| `http://localhost:8080/api/replayJobs` | Browse replay jobs |
+| `http://localhost:8080/internal/ingest` | Ingestion endpoint (requires Bearer token) |
+
+### Trigger a replay job (example)
+
+```bash
+curl -X POST http://localhost:8080/api/replayJobs/trigger \
+  -H "Content-Type: application/json" \
+  -d '{"executionConfigId": 1}'
+```
+
+### Ingest a captured request (example)
+
+```bash
+curl -X POST http://localhost:8080/internal/ingest \
+  -H "Authorization: Bearer <INTERNAL_INGEST_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "method": "GET",
+    "uri": "https://example.com/api/resource",
+    "headers": {"Accept": "application/json"},
+    "body": null
+  }'
+```
+
+---
+
 ## Architecture
 
 The project follows strict DDD / clean architecture. Layer boundaries are enforced by the [Agent.md](Agent.md) rules.

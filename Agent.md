@@ -103,7 +103,18 @@ Every ticket requires tests. No ticket is complete without them.
 
 ---
 
-## 8. Self-Correction Checklist
+## 8. GitHub Ticket Workflow
+
+All work must be tracked on the GitHub project board at [https://github.com/users/th-lange/projects/1](https://github.com/users/th-lange/projects/1).
+
+- **Before starting work** on a ticket, move it to **"In Progress"** on the project board.
+- **When the implementation is complete**, open a Pull Request with a clear, concise title and description that references the ticket (e.g. `Closes #<issue-number>`). Move the ticket to **"In Review"**.
+- The PR description must summarise: what was changed, why, and any relevant implementation decisions.
+- A ticket must never remain in "Todo" while actively being worked on, and must never stay in "In Progress" after a PR has been opened.
+
+---
+
+## 9. Self-Correction Checklist
 
 Run this checklist mentally before marking any implementation complete:
 

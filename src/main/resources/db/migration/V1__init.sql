@@ -1,0 +1,1 @@
+-- Initial schema placeholder (tables will be added in subsequent tickets)
