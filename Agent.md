@@ -3,6 +3,10 @@
 This file governs all implementation work on the Part 2 engine (Kotlin / Spring Boot).  
 Read it fully before writing any code. Apply every rule on every task.
 
+**Task tracking:** All tasks are tracked via the GitHub project board at [https://github.com/users/th-lange/projects/1](https://github.com/users/th-lange/projects/1).
+
+**Development environment:** All development work should be containerized using Docker. Use Docker Compose for local development to spin up PostgreSQL, the Spring Boot application, and any other dependencies as containers.
+
 ---
 
 ## 1. Architectural Layer Rules
@@ -119,7 +123,111 @@ If any box cannot be checked, fix the issue before considering the work done.
 
 ---
 
-## 9. What Not To Do
+## 9. Diagrams
+
+All architecture and design diagrams in this project are written in **Mermaid**. When creating or updating diagrams, follow the style conventions below so all diagrams remain visually consistent.
+
+### 9.1 Colour palette
+
+| Role | Fill | Stroke | Text |
+|---|---|---|---|
+| External system / sidecar | `#625F9B` | `none` | `#FFF` |
+| Service / controller / application layer | `#DB488B` | `none` | `#FFF` |
+| Utility / engine component | `#63EBB6` | `none` | `#000` |
+| Domain model / data entity | `#FFED6E` | `none` | `#000` |
+| Repository / storage adapter | `#B2ACAB` | `none` | `#000` |
+| Database node | `#FFED6E` | `none` | `#000` |
+
+Apply colours via `style <NodeId> fill:<hex>,stroke:none,color:<hex>`.
+Architecture
+### 9.2 Diagram types in use
+
+| Diagram | Purpose |
+|---|---|
+| `graph TD` | High-level component and data-flow overview |
+| `erDiagram` | Database schema and table relationships |
+| `sequenceDiagram` | Async request/replay lifecycle |
+| `classDiagram` | Domain port interfaces and their implementations |
+
+### 9.3 Style rules
+
+- Always set `stroke:none` — no border on any node.
+- Use the palette above; do not introduce ad-hoc colours.
+- Subgraphs group nodes by architectural layer (`Ingestion`, `Domain`, `Replay`, `Storage`).
+- `sequenceDiagram` participants follow the call order left-to-right.
+- `classDiagram` marks interfaces with `<<interface>>`.
+- Every diagram must have a prose heading that explains what it shows.
+
+### 9.4 Architecture diagram
+
+```mermaid
+graph TD
+    Part1[Part 1: Go Sidecar]
+
+    subgraph Ingestion
+        IC[IngestionController]
+        IS[IngestionService]
+    end
+
+    subgraph Domain
+        RR[CapturedRequest]
+        EC[ExecutionConfig]
+        RJ[ReplayJob]
+        EL[ExecutionLog]
+    end
+
+    subgraph Replay
+        RJS[ReplayJobScheduler]
+        RS[ReplayService]
+        ME[MutationEngine]
+        HC[HttpExecutor]
+    end
+
+    subgraph Storage
+        RA[RequestRepository]
+        CA[ConfigRepository]
+        JA[JobRepository]
+        LA[LogRepository]
+        DB[(Database)]
+    end
+
+    Part1 -->|POST /internal/ingest| IC
+    IC --> IS
+    IS --> RA
+
+    RJS -->|Launches Coroutine| RS
+    RS --> CA
+    RS --> ME
+    ME --> HC
+    HC --> LA
+    RS --> JA
+
+    RA --> DB
+    CA --> DB
+    JA --> DB
+    LA --> DB
+
+    style Part1 fill:#625F9B,stroke:none,color:#FFF
+    style IC fill:#DB488B,stroke:none,color:#FFF
+    style IS fill:#DB488B,stroke:none,color:#FFF
+    style RS fill:#DB488B,stroke:none,color:#FFF
+    style RJS fill:#DB488B,stroke:none,color:#FFF
+    style ME fill:#63EBB6,stroke:none,color:#000
+    style HC fill:#63EBB6,stroke:none,color:#000
+    style RR fill:#FFED6E,stroke:none,color:#000
+    style EC fill:#FFED6E,stroke:none,color:#000
+    style RJ fill:#FFED6E,stroke:none,color:#000
+    style EL fill:#FFED6E,stroke:none,color:#000
+    style RA fill:#B2ACAB,stroke:none,color:#000
+    style CA fill:#B2ACAB,stroke:none,color:#000
+    style JA fill:#B2ACAB,stroke:none,color:#000
+    style LA fill:#B2ACAB,stroke:none,color:#000
+    style DB fill:#FFED6E,stroke:none,color:#000
+```
+
+---
+
+## 10. What Not To Do
 
 - Do not add `UPDATE` or `DELETE` operations on `captured_requests` for any reason.
 - Do not add HTTP endpoints that were not specified in the implementation plan without discussing first.
