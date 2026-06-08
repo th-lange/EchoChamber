@@ -1,2 +1,13 @@
-.idea
-.junie
+# IDE
+.idea/
+.claude/
+
+# Gradle
+.gradle/
+build/
+
+# Environment secrets
+.env
+
+# Junie
+.junie/
