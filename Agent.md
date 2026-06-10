@@ -112,6 +112,19 @@ All work must be tracked on the GitHub project board at [https://github.com/user
 - The PR description must summarise: what was changed, why, and any relevant implementation decisions.
 - A ticket must never remain in "Todo" while actively being worked on, and must never stay in "In Progress" after a PR has been opened.
 
+### 8.1 Definition of Done — Mandatory after every task
+
+Every time a unit of work is finished, the agent **must**, without being asked:
+
+1. **Self-evaluate** against the ticket's Acceptance Criteria and the §9 Self-Correction Checklist.
+2. **Run the relevant tests** (`./gradlew test` or a scoped subset) and confirm they pass. Pre-existing, unrelated failures must be called out explicitly, not silently ignored.
+3. **Verify layer purity** — no framework imports leaked into `domain/`, no adapter/web imports leaked into `application/`.
+4. **If the work is ready**, open a Pull Request immediately via `gh pr create` against `main`, with `Closes #<issue-number>` in the body. Do not wait for the user to ask.
+5. **If the work is not ready**, state precisely what is missing and what the next step is before stopping.
+6. **Report PR URL and evaluation summary** back to the user in the same response.
+
+This rule applies to every ticket, refactor, bugfix, or chore — no exceptions.
+
 ---
 
 ## 9. Self-Correction Checklist
