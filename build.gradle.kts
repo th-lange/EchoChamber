@@ -75,4 +75,12 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // Forward `-Drun.integration=true` from the Gradle invocation to the test JVM so
+    // Testcontainers-driven integration tests gated by `@EnabledIfSystemProperty` opt
+    // in. CI sets this; local dev runs without it so missing/old Docker is a skip,
+    // not a failure.
+    systemProperty(
+        "run.integration",
+        System.getProperty("run.integration", "false")
+    )
 }
