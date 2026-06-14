@@ -4,4 +4,8 @@ All coding standards, architectural rules, self-correction requirements, and gua
 
 → [Agent.md](Agent.md)
 
-Read and apply that file before writing any code.
+The system-level bridge (shared contract, cross-project protocol, environment variables) is defined in:
+
+→ [../CLAUDE.md](../CLAUDE.md)
+
+Read both files before writing any code.
