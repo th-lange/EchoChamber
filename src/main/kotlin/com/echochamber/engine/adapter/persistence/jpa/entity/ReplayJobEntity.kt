@@ -41,5 +41,11 @@ class ReplayJobEntity(
     var startedAt: Instant?,
 
     @Column(name = "completed_at")
-    var completedAt: Instant?
+    var completedAt: Instant?,
+
+    @Column(name = "triggered_by")
+    var triggeredBy: UUID? = null,
+
+    @Column(name = "triggered_by_username", length = 255)
+    var triggeredByUsername: String? = null,
 )

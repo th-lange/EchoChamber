@@ -85,7 +85,9 @@ internal class JpaEntityMapper(private val objectMapper: ObjectMapper) {
         processedRequests = domain.processedRequests,
         failedRequests = domain.failedRequests,
         startedAt = domain.startedAt,
-        completedAt = domain.completedAt
+        completedAt = domain.completedAt,
+        triggeredBy = domain.triggeredBy,
+        triggeredByUsername = domain.triggeredByUsername
     )
 
     fun toDomain(entity: ReplayJobEntity): ReplayJob = ReplayJob(
@@ -96,7 +98,9 @@ internal class JpaEntityMapper(private val objectMapper: ObjectMapper) {
         processedRequests = entity.processedRequests,
         failedRequests = entity.failedRequests,
         startedAt = entity.startedAt,
-        completedAt = entity.completedAt
+        completedAt = entity.completedAt,
+        triggeredBy = entity.triggeredBy,
+        triggeredByUsername = entity.triggeredByUsername
     )
 
     // ---------- ExecutionLog ----------

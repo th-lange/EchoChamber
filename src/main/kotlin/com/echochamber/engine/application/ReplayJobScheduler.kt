@@ -37,6 +37,8 @@ class ReplayJobScheduler(
         configId: UUID,
         selection: ReplaySelection,
         override: RequestOverride? = null,
+        triggeredBy: UUID? = null,
+        triggeredByUsername: String? = null,
     ): ReplayJob {
         val job = ReplayJob(
             id = UUID.randomUUID(),
@@ -47,6 +49,8 @@ class ReplayJobScheduler(
             failedRequests = 0,
             startedAt = null,
             completedAt = null,
+            triggeredBy = triggeredBy,
+            triggeredByUsername = triggeredByUsername,
         )
         storage.saveJob(job)
 
