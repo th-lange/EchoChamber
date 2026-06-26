@@ -56,6 +56,15 @@ class PortContractTest {
 
         override suspend fun findRequest(id: UUID): CapturedRequest? = requests[id]
 
+        override suspend fun findRecentDuplicate(
+            method: String,
+            uri: String,
+            authority: String,
+            notBefore: Instant,
+        ): CapturedRequest? = requests.values.firstOrNull {
+            it.method == method && it.uri == uri && it.authority == authority && !it.capturedAt.isBefore(notBefore)
+        }
+
         override fun findRequests(filter: ReplayFilter): Flow<CapturedRequest> =
             requests.values
                 .filter { r -> filter.method == null || r.method == filter.method }

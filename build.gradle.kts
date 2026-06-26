@@ -25,6 +25,9 @@ dependencies {
     // Web
     implementation("org.springframework.boot:spring-boot-starter-web")
 
+    // Bean Validation (request DTO validation)
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+
     // OpenAPI / Swagger UI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
