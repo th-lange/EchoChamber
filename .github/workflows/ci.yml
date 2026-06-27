@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Unit + integration tests (Testcontainers)
+        # ubuntu-latest provides a Docker daemon for Testcontainers, so the integration
+        # tests (gated by -Drun.integration=true) run here. We override the JDK home that
+        # gradle.properties hard-codes for the local dev box with the runner's JAVA_HOME.
+        run: ./gradlew test -Drun.integration=true -Dorg.gradle.java.home="$JAVA_HOME" --no-daemon
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: build/reports/tests/test
+          if-no-files-found: ignore
