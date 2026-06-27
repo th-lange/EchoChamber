@@ -11,5 +11,7 @@ data class ReplayJob(
     val processedRequests: Int,
     val failedRequests: Int,
     val startedAt: Instant?,
-    val completedAt: Instant?
+    val completedAt: Instant?,
+    val triggeredBy: UUID? = null,
+    val triggeredByUsername: String? = null,
 )
