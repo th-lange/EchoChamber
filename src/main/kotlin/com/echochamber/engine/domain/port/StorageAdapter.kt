@@ -6,6 +6,7 @@ import com.echochamber.engine.domain.model.ExecutionLog
 import com.echochamber.engine.domain.model.ReplayFilter
 import com.echochamber.engine.domain.model.ReplayJob
 import kotlinx.coroutines.flow.Flow
+import java.time.Instant
 import java.util.UUID
 
 /**
@@ -26,6 +27,19 @@ interface StorageAdapter {
     suspend fun appendRequest(r: CapturedRequest): CapturedRequest
 
     suspend fun findRequest(id: UUID): CapturedRequest?
+
+    /**
+     * Idempotency support for ingest: returns a previously stored request matching the
+     * `(method, uri, authority)` tuple whose `capturedAt` is at or after [notBefore], or
+     * `null` if none. Used to drop near-duplicate captures within a short window. This is a
+     * read-only query and does not violate the append-only contract.
+     */
+    suspend fun findRecentDuplicate(
+        method: String,
+        uri: String,
+        authority: String,
+        notBefore: Instant,
+    ): CapturedRequest?
 
     fun findRequests(filter: ReplayFilter): Flow<CapturedRequest>
 

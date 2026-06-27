@@ -58,6 +58,18 @@ class JpaStorageAdapter(
             requestRepository.findById(id).map(mapper::toDomain).orElse(null)
         }
 
+    override suspend fun findRecentDuplicate(
+        method: String,
+        uri: String,
+        authority: String,
+        notBefore: Instant,
+    ): CapturedRequest? =
+        withContext(Dispatchers.IO) {
+            requestRepository
+                .findFirstByMethodAndUriAndAuthorityAndCapturedAtGreaterThanEqual(method, uri, authority, notBefore)
+                ?.let(mapper::toDomain)
+        }
+
     override fun findRequests(filter: ReplayFilter): Flow<CapturedRequest> = flow {
         val all = requestRepository.findAll()
         val uriRegex = filter.uriPattern?.let { Regex(it) }

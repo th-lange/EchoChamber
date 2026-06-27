@@ -36,4 +36,13 @@ interface CapturedRequestJpaRepository : PagingAndSortingRepository<CapturedRequ
     fun findAllByAuthority(authority: String): List<CapturedRequestEntity>
 
     fun findAllByCapturedAtBetween(from: Instant, to: Instant): List<CapturedRequestEntity>
+
+    /** Idempotency lookup for ingest; not exposed over REST. */
+    @RestResource(exported = false)
+    fun findFirstByMethodAndUriAndAuthorityAndCapturedAtGreaterThanEqual(
+        method: String,
+        uri: String,
+        authority: String,
+        capturedAt: Instant,
+    ): CapturedRequestEntity?
 }
