@@ -183,7 +183,7 @@ Every ticket requires tests. No ticket is complete without them.
 ## 8. Security Rules
 
 - `INTERNAL_INGEST_TOKEN` must never be hardcoded. Always read from environment variable.
-- `InternalAuthFilter` must reject with `401` on missing or mismatched token before any controller logic runs on `/internal/**` paths.
+- Ingest auth is optional, controlled by `INTERNAL_INGEST_TOKEN`. When it is **set**, `InternalAuthFilter` must reject with `401` on missing or mismatched token before any controller logic runs on `/internal/**` paths. When it is **empty/unset**, auth is disabled and `/internal/**` requests pass through — SnapReq must be configured the same way (empty `ECHOCHAMBER_TOKEN`). Production deployments must set the token.
 - `ScriptMutationHandler` must build its GraalVM `Context` with `allowAllAccess(false)` and no host class access. Scripts must run with a CPU time limit (suggest 2s). Any script that exceeds the limit or throws must log and surface a `FAILURE` status — never crash the replay job.
 - Never log full request bodies at INFO level — use DEBUG, and gate behind a feature flag if bodies may contain PII.
 - Drop rule regex patterns are compiled at cache-load time, not per-request. Catch `PatternSyntaxException` at load time.
