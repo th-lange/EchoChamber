@@ -68,8 +68,9 @@ docker compose up --build
 ```
 
 Starts `db` (PostgreSQL 15) and `app` (EchoChamber on `http://localhost:8080`) on a shared
-`reexec-net` network. The SnapReq sidecar is profile-gated — `docker compose --profile
-fullstack up` adds it once it has a Dockerfile.
+`reexec-net` bridge network. SnapReq runs from its own compose project and attaches to the
+same network (declared `external: true` on its side) to reach EchoChamber at
+`http://app:8080/internal/ingest`.
 
 ### 3. Run locally (without Docker)
 
