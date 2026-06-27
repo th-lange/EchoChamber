@@ -75,14 +75,27 @@ class ConsoleControllerTest @Autowired constructor(
 
     @Test
     @WithMockUser(roles = ["VIEWER"])
-    fun `viewer cannot post a retry`() {
-        assertEquals(403, statusOf(post("/admin/requests/${UUID.randomUUID()}/retry").with(csrf()).param("configId", UUID.randomUUID().toString())))
+    fun `viewer cannot reexecute`() {
+        assertEquals(403, statusOf(post("/admin/requests/reexecute").with(csrf()).param("requestIds", UUID.randomUUID().toString())))
     }
 
     @Test
     @WithMockUser(roles = ["OPERATOR"])
-    fun `operator retry redirects to history`() {
-        assertEquals(302, statusOf(post("/admin/requests/${UUID.randomUUID()}/retry").with(csrf()).param("configId", UUID.randomUUID().toString())))
+    fun `operator reexecute of selected requests redirects to history`() {
+        assertEquals(
+            302,
+            statusOf(
+                post("/admin/requests/reexecute").with(csrf())
+                    .param("requestIds", UUID.randomUUID().toString(), UUID.randomUUID().toString())
+                    .param("targetUrl", "https://staging.example.com"),
+            ),
+        )
+    }
+
+    @Test
+    @WithMockUser(roles = ["OPERATOR"])
+    fun `operator reexecute with no selection redirects without error`() {
+        assertEquals(302, statusOf(post("/admin/requests/reexecute").with(csrf())))
     }
 
     @Test

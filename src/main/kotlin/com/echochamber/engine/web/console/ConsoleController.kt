@@ -41,16 +41,23 @@ class ConsoleController(
         return "requests"
     }
 
-    @PostMapping("/admin/requests/{id}/retry")
-    suspend fun retry(
-        @PathVariable id: UUID,
-        @RequestParam configId: UUID,
+    /**
+     * Reexecute one or more selected requests as a single replay job, applying the same inline
+     * override to all of them. The execution config is assigned automatically (no UUID input);
+     * an empty selection simply redirects back without error.
+     */
+    @PostMapping("/admin/requests/reexecute")
+    suspend fun reexecute(
+        @RequestParam(name = "requestIds", required = false) requestIds: List<UUID>?,
         @RequestParam(required = false) targetUrl: String?,
         @RequestParam(required = false) pathOverride: String?,
         @RequestParam(required = false) headersSet: String?,
         @RequestParam(required = false) bodyPatches: String?,
         principal: Principal?,
     ): String {
+        val ids = requestIds.orEmpty()
+        if (ids.isEmpty()) return "redirect:/admin/requests?nothing"
+
         val override = RequestOverride(
             targetUrl = targetUrl?.ifBlank { null },
             pathOverride = pathOverride?.ifBlank { null },
@@ -58,14 +65,21 @@ class ConsoleController(
             bodyPatches = parsePairs(bodyPatches, "="),
         )
         val actor = principal?.name ?: "unknown"
+        val configId = console.ensureDefaultConfigId()
         val job = scheduler.scheduleJob(
             configId = configId,
-            selection = ReplaySelection(requestIds = listOf(id)),
+            selection = ReplaySelection(requestIds = ids),
             override = if (override.isEmpty) null else override,
             triggeredByUsername = actor,
         )
-        audit.record(AuditAction.RETRY_TRIGGERED, actorUsername = actor, targetType = "ReplayJob", targetId = job.id.toString())
-        return "redirect:/admin/history"
+        audit.record(
+            AuditAction.RETRY_TRIGGERED,
+            actorUsername = actor,
+            targetType = "ReplayJob",
+            targetId = job.id.toString(),
+            detail = "reexecute ${ids.size} request(s)",
+        )
+        return "redirect:/admin/history?triggered"
     }
 
     @GetMapping("/admin/history")

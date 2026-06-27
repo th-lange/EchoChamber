@@ -77,7 +77,8 @@ curl -X POST http://localhost:8080/api/replayJobs/trigger \
 | Path | Description |
 |---|---|
 | `GET /login` | Login page |
-| `GET /admin/requests` | Retriable requests + per-row retry-with-modify form |
+| `GET /admin/requests` | Retriable requests with multi-select reexecute (shared modifications) |
+| `POST /admin/requests/reexecute` | Reexecute the selected requests as one job; config assigned automatically (OPERATOR/ADMIN) |
 | `GET /admin/history` | Retry history (links to the read-only HAL resources) |
 | `GET /admin/users` | User management (ADMIN) |
 | `GET /admin/audit` | Audit log view (ADMIN) |

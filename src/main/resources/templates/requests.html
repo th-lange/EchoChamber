@@ -24,16 +24,53 @@
 
     <main>
         <h1>Retriable requests</h1>
-        <p class="info">Captured requests available to replay. Operators can retry one with
-            optional modifications — change the target URL/path, set headers, or patch body
-            fields. The original capture is never changed.</p>
+        <p class="info">Captured requests available to replay. Operators can select one or more
+            and reexecute them together — the modifications below (target URL/path, headers, body
+            field patches) are applied to all selected requests. The execution config is assigned
+            automatically; the original captures are never changed.</p>
 
-        <table>
+        <div class="alert note" th:if="${param.triggered}">Reexecution started — see retry history.</div>
+        <div class="alert note" th:if="${param.nothing}">Select at least one request to reexecute.</div>
+
+        <!-- One form wraps the table so checkboxes submit with the shared params (OPERATOR+). -->
+        <form sec:authorize="hasAnyRole('OPERATOR','ADMIN')" th:action="@{/admin/requests/reexecute}" method="post">
+            <div class="card" style="margin-bottom:1rem">
+                <strong>Reexecute selected — with modifications (all optional)</strong>
+                <div class="retry-form" style="margin-top:.6rem; max-width:640px">
+                    <input type="text" name="targetUrl" placeholder="target URL (e.g. https://staging.example.com)">
+                    <input type="text" name="pathOverride" placeholder="/path override">
+                    <textarea name="headersSet" placeholder="Header: value  (one per line)"></textarea>
+                    <textarea name="bodyPatches" placeholder="field=value  (one per line)"></textarea>
+                    <button type="submit">Reexecute selected</button>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:2rem"></th>
+                    <th>Method</th><th>Authority</th><th>URI</th><th>Captured</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="r : ${requests}">
+                    <td><input type="checkbox" name="requestIds" th:value="${r.id}" style="width:auto"></td>
+                    <td><span class="method" th:text="${r.method}">GET</span></td>
+                    <td th:text="${r.authority}">example.com</td>
+                    <td class="mono" th:text="${r.uri}">/api</td>
+                    <td th:text="${r.capturedAt}">t</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(requests)}">
+                    <td colspan="5" class="info">No captured requests yet.</td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+
+        <!-- Read-only view for VIEWER (no reexecute controls). -->
+        <table sec:authorize="!hasAnyRole('OPERATOR','ADMIN')">
             <thead>
-            <tr>
-                <th>Method</th><th>Authority</th><th>URI</th><th>Captured</th>
-                <th sec:authorize="hasAnyRole('OPERATOR','ADMIN')">Retry with modifications</th>
-            </tr>
+            <tr><th>Method</th><th>Authority</th><th>URI</th><th>Captured</th></tr>
             </thead>
             <tbody>
             <tr th:each="r : ${requests}">
@@ -41,19 +78,9 @@
                 <td th:text="${r.authority}">example.com</td>
                 <td class="mono" th:text="${r.uri}">/api</td>
                 <td th:text="${r.capturedAt}">t</td>
-                <td sec:authorize="hasAnyRole('OPERATOR','ADMIN')">
-                    <form class="retry-form" th:action="@{'/admin/requests/' + ${r.id} + '/retry'}" method="post">
-                        <input type="text" name="configId" placeholder="execution config UUID" required>
-                        <input type="text" name="targetUrl" placeholder="target URL (optional)">
-                        <input type="text" name="pathOverride" placeholder="/path override (optional)">
-                        <textarea name="headersSet" placeholder="Header: value  (one per line)"></textarea>
-                        <textarea name="bodyPatches" placeholder="field=value  (one per line)"></textarea>
-                        <button type="submit">Retry</button>
-                    </form>
-                </td>
             </tr>
             <tr th:if="${#lists.isEmpty(requests)}">
-                <td colspan="5" class="info">No captured requests yet.</td>
+                <td colspan="4" class="info">No captured requests yet.</td>
             </tr>
             </tbody>
         </table>
