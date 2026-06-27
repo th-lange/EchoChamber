@@ -28,6 +28,9 @@ dependencies {
     // Bean Validation (request DTO validation)
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
+    // WebClient for the HTTP executor (app remains servlet-based via spring-boot-starter-web)
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+
     // OpenAPI / Swagger UI
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
