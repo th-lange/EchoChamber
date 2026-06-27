@@ -1,14 +1,39 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Retry history</title></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Retry history — EchoChamber</title>
+    <link rel="stylesheet" th:href="@{/css/console.css}">
+</head>
 <body>
-<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/history}">Retry history</a></nav>
-<h1>Retry history</h1>
-<p>Replay jobs and execution logs are available read-only via the HAL API:</p>
-<ul>
-    <li><a th:href="@{/api/replayJobs}">/api/replayJobs</a> — jobs (status, counts, triggered_by)</li>
-    <li><a th:href="@{/api/executionLogs}">/api/executionLogs</a> — per-request outcomes</li>
-    <li><a th:href="@{/api/explorer}">/api/explorer</a> — HAL explorer</li>
-</ul>
+<div class="container">
+    <header class="topbar">
+        <div class="brand">EchoChamber <span class="subtitle">admin console</span></div>
+        <div class="userbox" sec:authorize="isAuthenticated()">
+            Signed in as <b sec:authentication="name">user</b>
+            <form th:action="@{/logout}" method="post" class="inline"><button class="link" type="submit">Logout</button></form>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}">Requests</a>
+        <a th:href="@{/admin/history}">Retry history</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/users}">Users</a>
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin/audit}">Audit</a>
+    </nav>
+
+    <main>
+        <h1>Retry history</h1>
+        <p class="info">Replay jobs and per-request execution outcomes are exposed read-only via
+            the HAL API. Each job records its status, counts, and the user who triggered it.</p>
+        <div class="card">
+            <ul>
+                <li><a th:href="@{/api/replayJobs}">/api/replayJobs</a> — jobs (status, counts, triggered&nbsp;by)</li>
+                <li><a th:href="@{/api/executionLogs}">/api/executionLogs</a> — per-request outcomes</li>
+                <li><a th:href="@{/api/explorer}">/api/explorer</a> — HAL explorer</li>
+            </ul>
+        </div>
+    </main>
+</div>
 </body>
 </html>

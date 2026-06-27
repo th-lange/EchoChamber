@@ -5,7 +5,9 @@ Security filter chains:
 
 - **`/internal/**` (machine-to-machine):** `InternalAuthFilter` validates a static Bearer
   token (`INTERNAL_INGEST_TOKEN`, read from env, never hardcoded) and returns `401` before
-  any controller logic. This chain is stateless and is **not** routed through the form login;
+  any controller logic. **When the token is unset/empty/blank, ingest auth is disabled** and
+  requests pass through (convenient for local dev; SnapReq must then send no token). This
+  chain is stateless and is **not** routed through the form login;
   its global servlet auto-registration is disabled so the filter neither double-runs nor is
   bypassed.
 - **`/admin/**` and `/api/**` (humans):** Spring Security form login backed by the `users`

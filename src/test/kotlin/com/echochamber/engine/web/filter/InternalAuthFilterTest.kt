@@ -92,6 +92,18 @@ class InternalAuthFilterTest {
     }
 
     @Test
+    fun `whitespace-only expected token disables auth and passes through`() {
+        val request = mock(HttpServletRequest::class.java)
+        val response = mock(HttpServletResponse::class.java)
+        val chain = mock(FilterChain::class.java)
+
+        TestableFilter("   ").doFilterInternal(request, response, chain)
+
+        verify(chain).doFilter(request, response)
+        verify(response, never()).sendError(anyInt(), anyString())
+    }
+
+    @Test
     fun `non-internal path is skipped by shouldNotFilter`() {
         val request = mock(HttpServletRequest::class.java)
         mockWhen(request.servletPath).thenReturn("/api/configs")

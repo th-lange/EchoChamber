@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Audit log</title></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Audit log — EchoChamber</title>
+    <link rel="stylesheet" th:href="@{/css/console.css}">
+</head>
 <body>
-<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/users}">Users</a> | <a th:href="@{/admin/audit}">Audit</a></nav>
-<h1>Audit log</h1>
-<p>The audit trail is available read-only (ADMIN) via the HAL API:</p>
-<ul><li><a th:href="@{/api/auditLog}">/api/auditLog</a></li></ul>
+<div class="container">
+    <header class="topbar">
+        <div class="brand">EchoChamber <span class="subtitle">admin console</span></div>
+        <div class="userbox" sec:authorize="isAuthenticated()">
+            Signed in as <b sec:authentication="name">user</b>
+            <form th:action="@{/logout}" method="post" class="inline"><button class="link" type="submit">Logout</button></form>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}">Requests</a>
+        <a th:href="@{/admin/history}">Retry history</a>
+        <a th:href="@{/admin/users}">Users</a>
+        <a th:href="@{/admin/audit}">Audit</a>
+    </nav>
+
+    <main>
+        <h1>Audit log</h1>
+        <p class="info">An append-only trail of admin actions (logins, retries, cancels, user
+            changes) — who did what, and when. Exposed read-only to admins via the HAL API.</p>
+        <div class="card">
+            <ul><li><a th:href="@{/api/auditLog}">/api/auditLog</a></li></ul>
+        </div>
+    </main>
+</div>
 </body>
 </html>

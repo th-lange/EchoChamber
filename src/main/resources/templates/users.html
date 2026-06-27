@@ -1,36 +1,66 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>Users</title></head>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Users — EchoChamber</title>
+    <link rel="stylesheet" th:href="@{/css/console.css}">
+</head>
 <body>
-<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/users}">Users</a> | <a th:href="@{/admin/audit}">Audit</a></nav>
-<h1>Users</h1>
-<table border="1" cellpadding="4">
-    <thead><tr><th>Username</th><th>Role</th><th>Enabled</th><th>Must change pw</th><th>Action</th></tr></thead>
-    <tbody>
-    <tr th:each="u : ${users}">
-        <td th:text="${u.username}">user</td>
-        <td th:text="${u.role}">VIEWER</td>
-        <td th:text="${u.enabled}">true</td>
-        <td th:text="${u.mustChangePassword}">false</td>
-        <td>
-            <form th:if="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/disable'}" method="post" style="display:inline">
-                <button type="submit">Disable</button>
+<div class="container">
+    <header class="topbar">
+        <div class="brand">EchoChamber <span class="subtitle">admin console</span></div>
+        <div class="userbox" sec:authorize="isAuthenticated()">
+            Signed in as <b sec:authentication="name">user</b>
+            <form th:action="@{/logout}" method="post" class="inline"><button class="link" type="submit">Logout</button></form>
+        </div>
+    </header>
+
+    <nav class="tabs">
+        <a th:href="@{/admin/requests}">Requests</a>
+        <a th:href="@{/admin/history}">Retry history</a>
+        <a th:href="@{/admin/users}">Users</a>
+        <a th:href="@{/admin/audit}">Audit</a>
+    </nav>
+
+    <main>
+        <h1>Users</h1>
+        <p class="info">Admin console accounts. New users get a temporary password and must
+            change it on first login. The last active ADMIN cannot be disabled or demoted.</p>
+
+        <table>
+            <thead>
+            <tr><th>Username</th><th>Role</th><th>Enabled</th><th>Must change pw</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.username}">user</td>
+                <td th:text="${u.role}">VIEWER</td>
+                <td th:text="${u.enabled} ? 'yes' : 'no'">yes</td>
+                <td th:text="${u.mustChangePassword} ? 'yes' : 'no'">no</td>
+                <td>
+                    <form th:if="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/disable'}" method="post" class="inline">
+                        <button type="submit" class="secondary">Disable</button>
+                    </form>
+                    <form th:unless="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/enable'}" method="post" class="inline">
+                        <button type="submit">Enable</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <h2>Create user</h2>
+        <div class="card">
+            <form th:action="@{/admin/users}" method="post" class="retry-form" style="max-width:520px">
+                <input type="text" name="username" placeholder="username" required>
+                <input type="password" name="password" placeholder="temporary password" required>
+                <select name="role">
+                    <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">VIEWER</option>
+                </select>
+                <button type="submit">Create user</button>
             </form>
-            <form th:unless="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/enable'}" method="post" style="display:inline">
-                <button type="submit">Enable</button>
-            </form>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<h2>Create user</h2>
-<form th:action="@{/admin/users}" method="post">
-    <input type="text" name="username" placeholder="username" required>
-    <input type="password" name="password" placeholder="temp password" required>
-    <select name="role">
-        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">VIEWER</option>
-    </select>
-    <button type="submit">Create</button>
-</form>
+        </div>
+    </main>
+</div>
 </body>
 </html>
