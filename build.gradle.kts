@@ -42,6 +42,10 @@ dependencies {
     // Security (admin console form login + RBAC)
     implementation("org.springframework.boot:spring-boot-starter-security")
 
+    // Server-rendered admin console
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
+    implementation("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
+
     // Flyway
     implementation("org.flywaydb:flyway-core")
 

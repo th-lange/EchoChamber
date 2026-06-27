@@ -22,6 +22,12 @@ class UserService(
     private val hasher: PasswordHasher,
 ) {
 
+    suspend fun listUsers(): List<User> = users.findAll().sortedBy { it.username }
+
+    /** Whether the named user must change their password before using the console. */
+    suspend fun requiresPasswordChange(username: String): Boolean =
+        users.findByUsername(username)?.mustChangePassword ?: false
+
     suspend fun create(username: String, rawPassword: String, role: UserRole, createdBy: UUID?): User {
         require(users.findByUsername(username) == null) { "Username '$username' already exists" }
         val now = Instant.now()

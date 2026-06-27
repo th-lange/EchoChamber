@@ -64,6 +64,7 @@ class SecurityConfig {
                 authorize("/api/users/**", hasRole("ADMIN"))
                 authorize("/admin/users/**", hasRole("ADMIN"))
                 authorize("/admin/audit/**", hasRole("ADMIN"))
+                authorize("/admin/requests/*/retry", hasAnyRole("OPERATOR", "ADMIN"))
                 // OPERATOR+ actions
                 authorize("/api/replayJobs/trigger", hasAnyRole("OPERATOR", "ADMIN"))
                 authorize("/api/replayJobs/*/cancel", hasAnyRole("OPERATOR", "ADMIN"))
