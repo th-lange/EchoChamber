@@ -36,23 +36,16 @@ services:
       db:
         condition: service_healthy
 
-  # SnapReq sidecar — joins the shared network so it can POST captured requests to
-  # http://app:8080/internal/ingest in dev. Profile-gated because ../SnapReq does not yet
-  # have a runnable build / Dockerfile (tracked in th-lange/SnapReq). Default `docker
-  # compose up` brings up db + app only; `docker compose --profile fullstack up` adds this.
-  snapreq:
-    build: ../SnapReq
-    profiles: ["fullstack"]
-    environment:
-      ECHOCHAMBER_URL: http://app:8080
-      INTERNAL_INGEST_TOKEN: ${INTERNAL_INGEST_TOKEN}
-    networks:
-      - reexec-net
-    depends_on:
-      - app
-
+# Shared bridge network with a stable name so SnapReq — run from its own compose project —
+# can attach to it and reach EchoChamber at http://app:8080/internal/ingest in dev. On the
+# SnapReq side, declare it as external:
+#
+#   networks:
+#     reexec-net:
+#       external: true
 networks:
   reexec-net:
+    name: reexec-net
     driver: bridge
 
 volumes:
