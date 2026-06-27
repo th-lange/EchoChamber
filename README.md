@@ -58,7 +58,7 @@ dev), copy the template and edit:
 cp .env.example .env
 ```
 
-- `INTERNAL_INGEST_TOKEN` — Bearer token the sidecar uses for `/internal/ingest` (default `dev-internal-token`).
+- `INTERNAL_INGEST_TOKEN` — Bearer token the sidecar uses for `/internal/ingest`. **Empty by default, which disables ingest auth** (fine for local dev); set a value to require it.
 - `ADMIN_BOOTSTRAP_USER` / `ADMIN_BOOTSTRAP_PASSWORD` — the initial `ADMIN` account, created
   on first boot if no users exist (default `admin` / `admin`; first login forces a password change).
 

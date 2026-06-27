@@ -7,7 +7,7 @@ All `/admin/**` and `/api/**` endpoints require an authenticated session (log in
 
 | Method | Path | Auth | Description |
 |---|---|---|---|
-| `POST` | `/internal/ingest` | Bearer `INTERNAL_INGEST_TOKEN` | Accept a captured request from the Go sidecar. Always returns `202 Accepted`; `capturedAt` is server-stamped; near-duplicates within a 1 s window are dropped |
+| `POST` | `/internal/ingest` | Bearer `INTERNAL_INGEST_TOKEN` (auth skipped when the token is unset/empty) | Accept a captured request from the Go sidecar. Always returns `202 Accepted`; `capturedAt` is server-stamped; near-duplicates within a 1 s window are dropped |
 
 ```bash
 curl -X POST http://localhost:8080/internal/ingest \

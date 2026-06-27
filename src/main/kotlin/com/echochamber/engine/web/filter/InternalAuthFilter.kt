@@ -24,10 +24,10 @@ class InternalAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
-        // Optional ingest auth: when no token is configured, auth is disabled and
-        // requests pass through. SnapReq must be configured the same way (empty
+        // Optional ingest auth: when no token is configured (unset, empty, or blank), auth is
+        // disabled and requests pass through. SnapReq must be configured the same way (empty
         // ECHOCHAMBER_TOKEN => no Authorization header sent).
-        if (expectedToken.isEmpty()) {
+        if (expectedToken.isBlank()) {
             filterChain.doFilter(request, response)
             return
         }
