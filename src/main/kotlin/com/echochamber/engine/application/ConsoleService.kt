@@ -2,12 +2,16 @@ package com.echochamber.engine.application
 
 import com.echochamber.engine.domain.model.CapturedRequest
 import com.echochamber.engine.domain.model.ExecutionConfig
+import com.echochamber.engine.domain.model.ExecutionLog
 import com.echochamber.engine.domain.model.ReplayFilter
+import com.echochamber.engine.domain.model.ReplayJob
 import com.echochamber.engine.domain.port.StorageAdapter
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import org.springframework.stereotype.Service
 import java.util.UUID
+
+/** A captured request plus how many times it has been reexecuted. */
+data class RequestListItem(val request: CapturedRequest, val retries: Long)
 
 /**
  * Read-side queries + console helpers backing the admin console (TICKET-020). Keeps the web
@@ -17,9 +21,20 @@ import java.util.UUID
 class ConsoleService(
     private val storage: StorageAdapter,
 ) {
-    /** Most recent captured requests (capped) for the "retriable requests" table. */
-    suspend fun listRequests(limit: Int = 200): List<CapturedRequest> =
-        storage.findRequests(ReplayFilter()).take(limit).toList().sortedByDescending { it.capturedAt }
+    /** Filtered captured requests (capped) with their reexecution counts, newest first. */
+    suspend fun listRequests(filter: ReplayFilter = ReplayFilter(), limit: Int = 200): List<RequestListItem> {
+        val counts = storage.executionCountsByRequest()
+        return storage.findRequests(filter).toList()
+            .sortedByDescending { it.capturedAt }
+            .take(limit)
+            .map { RequestListItem(it, counts[it.id] ?: 0L) }
+    }
+
+    /** Replay jobs for the retry-history view. */
+    suspend fun listJobs(limit: Int = 100): List<ReplayJob> = storage.listJobs(limit)
+
+    /** Execution logs for the retry-history view. */
+    suspend fun listLogs(limit: Int = 200): List<ExecutionLog> = storage.listLogs(limit)
 
     /**
      * Returns the id of the console's default execution config, creating it on first use.

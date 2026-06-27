@@ -1,6 +1,7 @@
 package com.echochamber.engine.adapter.persistence.jpa.repository
 
 import com.echochamber.engine.adapter.persistence.jpa.entity.ExecutionLogEntity
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.PagingAndSortingRepository
 import org.springframework.data.rest.core.annotation.RepositoryRestResource
 import org.springframework.data.rest.core.annotation.RestResource
@@ -29,4 +30,9 @@ interface ExecutionLogJpaRepository : PagingAndSortingRepository<ExecutionLogEnt
     fun findAllByJobId(jobId: UUID): List<ExecutionLogEntity>
 
     fun findAllByRequestId(requestId: UUID): List<ExecutionLogEntity>
+
+    /** [requestId, count] pairs — executions recorded per captured request. Not exposed over REST. */
+    @RestResource(exported = false)
+    @Query("select e.requestId, count(e) from ExecutionLogEntity e group by e.requestId")
+    fun countsByRequest(): List<Array<Any>>
 }

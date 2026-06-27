@@ -62,4 +62,15 @@ interface StorageAdapter {
     // --- Execution logs (append-only) ---
 
     suspend fun saveLog(l: ExecutionLog): ExecutionLog
+
+    // --- Console read queries ---
+
+    /** Most recent replay jobs (capped), for the retry-history view. */
+    suspend fun listJobs(limit: Int): List<ReplayJob>
+
+    /** Most recent execution logs (capped), for the retry-history view. */
+    suspend fun listLogs(limit: Int): List<ExecutionLog>
+
+    /** Number of executions recorded per captured request id (i.e. how many times retried). */
+    suspend fun executionCountsByRequest(): Map<UUID, Long>
 }

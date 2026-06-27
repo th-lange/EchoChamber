@@ -72,6 +72,28 @@ form.inline { display: inline; }
 .retry-form textarea { grid-column: 1 / -1; }
 .retry-form button { grid-column: 1 / -1; }
 
+.filterbar {
+  display: flex; flex-wrap: wrap; gap: .5rem; align-items: end; margin-bottom: 1rem;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: .85rem;
+}
+.filterbar .field { display: flex; flex-direction: column; gap: .2rem; font-size: .78rem; color: var(--muted); }
+.filterbar input, .filterbar select { width: auto; min-width: 9rem; }
+.filterbar .actions { display: flex; gap: .4rem; }
+
+.reexec-bar {
+  display: none; /* shown by console.js when a selection exists */
+  position: sticky; bottom: 0; z-index: 5; gap: .5rem; align-items: end; flex-wrap: wrap;
+  background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+  padding: .85rem; margin-top: 1rem; box-shadow: 0 -2px 12px rgba(16,24,40,.08);
+}
+.reexec-bar .grow { flex: 1 1 12rem; }
+.reexec-bar .selcount { font-weight: 700; color: var(--accent); white-space: nowrap; }
+.pill { display: inline-block; min-width: 1.5rem; text-align: center; padding: 0 .45rem;
+  border-radius: 999px; background: #eef0fb; color: #3b3a63; font-size: .8rem; font-weight: 700; }
+.status-COMPLETED { color: var(--ok); font-weight: 600; }
+.status-FAILED { color: #9b1c33; font-weight: 600; }
+.status-RUNNING, .status-PENDING { color: var(--accent); font-weight: 600; }
+
 .login-wrap { max-width: 360px; margin: 8vh auto 0; }
 .login-wrap .card { padding: 1.5rem; }
 .login-wrap label { display: block; margin-bottom: .75rem; font-size: .9rem; color: var(--muted); }

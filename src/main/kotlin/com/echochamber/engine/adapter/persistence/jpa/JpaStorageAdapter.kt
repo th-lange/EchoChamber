@@ -126,4 +126,27 @@ class JpaStorageAdapter(
         withContext(Dispatchers.IO) {
             mapper.toDomain(logRepository.save(mapper.toEntity(l)))
         }
+
+    // ---------- Console read queries ----------
+
+    override suspend fun listJobs(limit: Int): List<ReplayJob> =
+        withContext(Dispatchers.IO) {
+            jobRepository.findAll()
+                .sortedByDescending { it.startedAt ?: Instant.MAX }
+                .take(limit)
+                .map(mapper::toDomain)
+        }
+
+    override suspend fun listLogs(limit: Int): List<ExecutionLog> =
+        withContext(Dispatchers.IO) {
+            logRepository.findAll()
+                .sortedByDescending { it.executedAt }
+                .take(limit)
+                .map(mapper::toDomain)
+        }
+
+    override suspend fun executionCountsByRequest(): Map<UUID, Long> =
+        withContext(Dispatchers.IO) {
+            logRepository.countsByRequest().associate { row -> (row[0] as UUID) to (row[1] as Long) }
+        }
 }

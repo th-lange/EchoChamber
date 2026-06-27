@@ -98,6 +98,13 @@ class PortContractTest {
             logs[l.id] = l
             return l
         }
+
+        override suspend fun listJobs(limit: Int): List<ReplayJob> = jobs.values.toList().take(limit)
+
+        override suspend fun listLogs(limit: Int): List<ExecutionLog> = logs.values.toList().take(limit)
+
+        override suspend fun executionCountsByRequest(): Map<UUID, Long> =
+            logs.values.groupingBy { it.requestId }.eachCount().mapValues { it.value.toLong() }
     }
 
     private class UppercaseMethodHandler(private val order: Int) : MutationHandler {
