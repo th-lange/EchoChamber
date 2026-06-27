@@ -1,4 +1,7 @@
 spring:
+  data:
+    rest:
+      base-path: /api
   datasource:
     url: jdbc:tc:postgresql:15:///echochamber
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
