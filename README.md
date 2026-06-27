@@ -87,7 +87,7 @@ uses the Bearer token instead.
 
 | URL | Description |
 |---|---|
-| `http://localhost:8080/admin` | Admin console (requests, retry-with-modify, history, users, audit) |
+| `http://localhost:8080/admin` | Admin console (requests, multi-select reexecute, history, users, audit) |
 | `http://localhost:8080/api/explorer` | HAL Explorer — browse Spring Data REST resources |
 | `http://localhost:8080/swagger-ui.html` | Swagger UI |
 | `http://localhost:8080/internal/ingest` | Ingestion endpoint (Bearer token) |
