@@ -12,10 +12,14 @@ services:
     networks:
       - reexec-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U echochamber"]
+      # Probe over TCP (-h 127.0.0.1) so the check can't pass against the unix-socket-only
+      # server the postgres image runs during first-boot initialisation — otherwise the app
+      # is released too early and Flyway fails with a connection error (SQLSTATE 08001).
+      test: ["CMD-SHELL", "pg_isready -U echochamber -d echochamber -h 127.0.0.1 -p 5432"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
 
   app:
     build: .
