@@ -48,18 +48,19 @@ For the full technical reference, see [`docs/`](docs/README.md).
 - [Docker](https://docs.docker.com/get-docker/) and Docker Compose
 - JDK 21+ (only needed to run outside Docker)
 
-### 1. Configure environment
+### 1. Configure environment (optional)
+
+`docker compose up` works out of the box with built-in development defaults — no `.env`
+required. To override them (and you should before exposing the service anywhere beyond local
+dev), copy the template and edit:
 
 ```bash
 cp .env.example .env
 ```
 
-Set strong values for:
-- `INTERNAL_INGEST_TOKEN` — Bearer token the sidecar uses for `/internal/ingest`.
+- `INTERNAL_INGEST_TOKEN` — Bearer token the sidecar uses for `/internal/ingest` (default `dev-internal-token`).
 - `ADMIN_BOOTSTRAP_USER` / `ADMIN_BOOTSTRAP_PASSWORD` — the initial `ADMIN` account, created
-  on first boot if no users exist (first login forces a password change).
-
-The database defaults (`localhost:5432`, db/user/password all `echochamber`) work out of the box.
+  on first boot if no users exist (default `admin` / `admin`; first login forces a password change).
 
 ### 2. Run with Docker Compose
 
