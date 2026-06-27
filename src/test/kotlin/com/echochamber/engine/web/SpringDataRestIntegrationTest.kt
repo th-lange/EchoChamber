@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
@@ -35,6 +37,7 @@ import java.util.UUID
 @ActiveProfiles("test")
 @Tag("integration")
 @EnabledIfSystemProperty(named = "run.integration", matches = "true")
+@WithMockUser(roles = ["ADMIN"])
 class SpringDataRestIntegrationTest @Autowired constructor(
     private val mockMvc: MockMvc,
     private val capturedRequests: CapturedRequestJpaRepository,
@@ -55,6 +58,7 @@ class SpringDataRestIntegrationTest @Autowired constructor(
     fun `POST executionConfigs creates a record`() {
         mockMvc.perform(
             post("/api/executionConfigs")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(configJson("created-via-rest")),
         ).andExpect(status().isCreated)
@@ -64,11 +68,12 @@ class SpringDataRestIntegrationTest @Autowired constructor(
     fun `DELETE executionConfig removes the record`() {
         val location = mockMvc.perform(
             post("/api/executionConfigs")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(configJson("to-delete")),
         ).andExpect(status().isCreated).andReturn().response.getHeader("Location")!!
 
-        mockMvc.perform(delete(location)).andExpect(status().isNoContent)
+        mockMvc.perform(delete(location).with(csrf())).andExpect(status().isNoContent)
         mockMvc.perform(get(location)).andExpect(status().isNotFound)
     }
 
@@ -78,7 +83,7 @@ class SpringDataRestIntegrationTest @Autowired constructor(
     fun `DELETE capturedRequest is rejected with 405`() {
         val saved = capturedRequests.save(sampleCapturedEntity())
 
-        mockMvc.perform(delete("/api/capturedRequests/${saved.id}"))
+        mockMvc.perform(delete("/api/capturedRequests/${saved.id}").with(csrf()))
             .andExpect(status().isMethodNotAllowed)
     }
 
@@ -88,6 +93,7 @@ class SpringDataRestIntegrationTest @Autowired constructor(
 
         mockMvc.perform(
             put("/api/capturedRequests/${saved.id}")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"),
         ).andExpect(status().isMethodNotAllowed)

@@ -39,6 +39,9 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-rest")
     implementation("org.springframework.data:spring-data-rest-hal-explorer")
 
+    // Security (admin console form login + RBAC)
+    implementation("org.springframework.boot:spring-boot-starter-security")
+
     // Flyway
     implementation("org.flywaydb:flyway-core")
 
@@ -62,6 +65,7 @@ dependencies {
 
     // Test
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter")
 }

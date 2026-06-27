@@ -2,6 +2,7 @@ package com.echochamber.engine.web.ingestion
 
 import com.echochamber.engine.application.IngestionService
 import com.echochamber.engine.support.FakeStorageAdapter
+import com.echochamber.engine.web.security.SecurityConfig
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Bean
@@ -20,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired
  * behaviour is covered by `InternalAuthFilterTest`).
  */
 @WebMvcTest(controllers = [IngestController::class])
-@Import(IngestControllerTest.TestConfig::class)
+@Import(IngestControllerTest.TestConfig::class, SecurityConfig::class)
 @TestPropertySource(properties = ["INTERNAL_INGEST_TOKEN=test-token"])
 class IngestControllerTest @Autowired constructor(
     private val mockMvc: MockMvc,
