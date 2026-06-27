@@ -24,15 +24,48 @@
 
     <main>
         <h1>Retry history</h1>
-        <p class="info">Replay jobs and per-request execution outcomes are exposed read-only via
-            the HAL API. Each job records its status, counts, and the user who triggered it.</p>
-        <div class="card">
-            <ul>
-                <li><a th:href="@{/api/replayJobs}">/api/replayJobs</a> — jobs (status, counts, triggered&nbsp;by)</li>
-                <li><a th:href="@{/api/executionLogs}">/api/executionLogs</a> — per-request outcomes</li>
-                <li><a th:href="@{/api/explorer}">/api/explorer</a> — HAL explorer</li>
-            </ul>
-        </div>
+
+        <h2>Replay jobs</h2>
+        <p class="info">Each reexecution creates a job. Status, counts, and the user who triggered it.</p>
+        <table>
+            <thead>
+            <tr><th>Status</th><th>Total</th><th>Processed</th><th>Failed</th><th>Triggered by</th><th>Started</th><th>Completed</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="j : ${jobs}">
+                <td><span th:classappend="'status-' + ${j.status}" th:text="${j.status}">COMPLETED</span></td>
+                <td th:text="${j.totalRequests}">0</td>
+                <td th:text="${j.processedRequests}">0</td>
+                <td th:text="${j.failedRequests}">0</td>
+                <td th:text="${j.triggeredByUsername} ?: '—'">user</td>
+                <td th:text="${j.startedAt} ?: '—'">t</td>
+                <td th:text="${j.completedAt} ?: '—'">t</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(jobs)}"><td colspan="7" class="info">No replay jobs yet.</td></tr>
+            </tbody>
+        </table>
+
+        <h2 style="margin-top:1.5rem">Executions</h2>
+        <p class="info">One row per individual request execution, with the response outcome.</p>
+        <table>
+            <thead>
+            <tr><th>Executed</th><th>Status</th><th>Response</th><th>Time (ms)</th><th>Request</th></tr>
+            </thead>
+            <tbody>
+            <tr th:each="l : ${logs}">
+                <td th:text="${l.executedAt}">t</td>
+                <td><span th:classappend="'status-' + ${l.status}" th:text="${l.status}">SUCCESS</span></td>
+                <td th:text="${l.responseStatus} ?: '—'">200</td>
+                <td th:text="${l.responseTimeMs}">0</td>
+                <td class="mono" th:text="${l.requestId}">id</td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(logs)}"><td colspan="5" class="info">No executions yet.</td></tr>
+            </tbody>
+        </table>
+
+        <p class="info" style="margin-top:1rem">Full detail is also available via the HAL API:
+            <a th:href="@{/api/replayJobs}">/api/replayJobs</a>,
+            <a th:href="@{/api/executionLogs}">/api/executionLogs</a>.</p>
     </main>
 </div>
 </body>

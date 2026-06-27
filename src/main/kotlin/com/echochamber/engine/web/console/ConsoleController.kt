@@ -6,8 +6,11 @@ import com.echochamber.engine.application.ReplayJobScheduler
 import com.echochamber.engine.application.ReplaySelection
 import com.echochamber.engine.application.UserService
 import com.echochamber.engine.domain.model.AuditAction
+import com.echochamber.engine.domain.model.ReplayFilter
 import com.echochamber.engine.domain.model.RequestOverride
 import com.echochamber.engine.domain.model.UserRole
+import java.time.LocalDate
+import java.time.ZoneOffset
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -36,10 +39,29 @@ class ConsoleController(
     fun home() = "redirect:/admin/requests"
 
     @GetMapping("/admin/requests")
-    suspend fun requests(model: Model): String {
-        model.addAttribute("requests", console.listRequests())
+    suspend fun requests(
+        @RequestParam(required = false) from: String?,
+        @RequestParam(required = false) to: String?,
+        @RequestParam(required = false) authority: String?,
+        @RequestParam(required = false) path: String?,
+        @RequestParam(required = false) method: String?,
+        model: Model,
+    ): String {
+        val filter = ReplayFilter(
+            method = method?.ifBlank { null },
+            uriPattern = path?.ifBlank { null },
+            authority = authority?.ifBlank { null },
+            capturedAfter = parseDate(from)?.atStartOfDay(ZoneOffset.UTC)?.toInstant(),
+            capturedBefore = parseDate(to)?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toInstant(),
+        )
+        model.addAttribute("requests", console.listRequests(filter))
+        model.addAttribute("filter", mapOf("from" to from, "to" to to, "authority" to authority, "path" to path, "method" to method))
         return "requests"
     }
+
+    /** Parse a yyyy-MM-dd date; never throws (invalid input is ignored). */
+    private fun parseDate(value: String?): LocalDate? =
+        value?.takeIf { it.isNotBlank() }?.let { runCatching { LocalDate.parse(it) }.getOrNull() }
 
     /**
      * Reexecute one or more selected requests as a single replay job, applying the same inline
@@ -83,7 +105,11 @@ class ConsoleController(
     }
 
     @GetMapping("/admin/history")
-    fun history() = "history"
+    suspend fun history(model: Model): String {
+        model.addAttribute("jobs", console.listJobs())
+        model.addAttribute("logs", console.listLogs())
+        return "history"
+    }
 
     @GetMapping("/admin/users")
     suspend fun users(model: Model): String {

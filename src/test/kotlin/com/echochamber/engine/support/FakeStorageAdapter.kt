@@ -73,4 +73,11 @@ class FakeStorageAdapter : StorageAdapter {
         logs.add(l)
         return l
     }
+
+    override suspend fun listJobs(limit: Int): List<ReplayJob> = jobs.values.toList().take(limit)
+
+    override suspend fun listLogs(limit: Int): List<ExecutionLog> = logs.toList().take(limit)
+
+    override suspend fun executionCountsByRequest(): Map<UUID, Long> =
+        logs.groupingBy { it.requestId }.eachCount().mapValues { it.value.toLong() }
 }
