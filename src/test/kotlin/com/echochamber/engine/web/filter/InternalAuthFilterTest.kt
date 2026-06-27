@@ -78,6 +78,20 @@ class InternalAuthFilterTest {
     }
 
     @Test
+    fun `blank expected token disables auth and passes through`() {
+        val request = mock(HttpServletRequest::class.java)
+        val response = mock(HttpServletResponse::class.java)
+        val chain = mock(FilterChain::class.java)
+
+        // No Authorization header, but the filter is configured with no token —
+        // ingest auth is disabled, so the request passes straight through.
+        TestableFilter("").doFilterInternal(request, response, chain)
+
+        verify(chain).doFilter(request, response)
+        verify(response, never()).sendError(anyInt(), anyString())
+    }
+
+    @Test
     fun `non-internal path is skipped by shouldNotFilter`() {
         val request = mock(HttpServletRequest::class.java)
         mockWhen(request.servletPath).thenReturn("/api/configs")

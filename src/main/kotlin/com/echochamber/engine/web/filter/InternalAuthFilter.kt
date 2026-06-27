@@ -24,6 +24,14 @@ class InternalAuthFilter(
         response: HttpServletResponse,
         filterChain: FilterChain,
     ) {
+        // Optional ingest auth: when no token is configured, auth is disabled and
+        // requests pass through. SnapReq must be configured the same way (empty
+        // ECHOCHAMBER_TOKEN => no Authorization header sent).
+        if (expectedToken.isEmpty()) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val header = request.getHeader("Authorization")
 
         if (header == null || !header.startsWith("Bearer ")) {
