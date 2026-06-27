@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Audit log</title></head>
+<body>
+<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/users}">Users</a> | <a th:href="@{/admin/audit}">Audit</a></nav>
+<h1>Audit log</h1>
+<p>The audit trail is available read-only (ADMIN) via the HAL API:</p>
+<ul><li><a th:href="@{/api/auditLog}">/api/auditLog</a></li></ul>
+</body>
+</html>

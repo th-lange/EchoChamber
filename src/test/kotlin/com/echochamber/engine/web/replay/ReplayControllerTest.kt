@@ -16,7 +16,11 @@ import com.echochamber.engine.domain.port.StorageAdapter
 import com.echochamber.engine.domain.port.UserStore
 import com.echochamber.engine.support.FakeStorageAdapter
 import com.echochamber.engine.support.FakeUserStore
+import com.echochamber.engine.web.console.ConsoleWebConfig
+import com.echochamber.engine.web.console.ForcedPasswordChangeInterceptor
 import com.echochamber.engine.web.security.SecurityConfig
+import org.springframework.context.annotation.ComponentScan.Filter
+import org.springframework.context.annotation.FilterType
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
@@ -32,7 +36,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.async
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import java.util.UUID
 
-@WebMvcTest(controllers = [ReplayController::class])
+@WebMvcTest(
+    controllers = [ReplayController::class],
+    excludeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [ConsoleWebConfig::class, ForcedPasswordChangeInterceptor::class])],
+)
 @Import(ReplayControllerTest.TestConfig::class, SecurityConfig::class)
 class ReplayControllerTest @Autowired constructor(
     private val mockMvc: MockMvc,

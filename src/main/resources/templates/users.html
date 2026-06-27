@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Users</title></head>
+<body>
+<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/users}">Users</a> | <a th:href="@{/admin/audit}">Audit</a></nav>
+<h1>Users</h1>
+<table border="1" cellpadding="4">
+    <thead><tr><th>Username</th><th>Role</th><th>Enabled</th><th>Must change pw</th><th>Action</th></tr></thead>
+    <tbody>
+    <tr th:each="u : ${users}">
+        <td th:text="${u.username}">user</td>
+        <td th:text="${u.role}">VIEWER</td>
+        <td th:text="${u.enabled}">true</td>
+        <td th:text="${u.mustChangePassword}">false</td>
+        <td>
+            <form th:if="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/disable'}" method="post" style="display:inline">
+                <button type="submit">Disable</button>
+            </form>
+            <form th:unless="${u.enabled}" th:action="@{'/admin/users/' + ${u.id} + '/enable'}" method="post" style="display:inline">
+                <button type="submit">Enable</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<h2>Create user</h2>
+<form th:action="@{/admin/users}" method="post">
+    <input type="text" name="username" placeholder="username" required>
+    <input type="password" name="password" placeholder="temp password" required>
+    <select name="role">
+        <option th:each="role : ${roles}" th:value="${role}" th:text="${role}">VIEWER</option>
+    </select>
+    <button type="submit">Create</button>
+</form>
+</body>
+</html>

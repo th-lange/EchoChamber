@@ -2,8 +2,12 @@ package com.echochamber.engine.web.ingestion
 
 import com.echochamber.engine.application.IngestionService
 import com.echochamber.engine.support.FakeStorageAdapter
+import com.echochamber.engine.web.console.ConsoleWebConfig
+import com.echochamber.engine.web.console.ForcedPasswordChangeInterceptor
 import com.echochamber.engine.web.security.SecurityConfig
 import org.junit.jupiter.api.Test
+import org.springframework.context.annotation.ComponentScan.Filter
+import org.springframework.context.annotation.FilterType
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
@@ -20,7 +24,10 @@ import org.springframework.beans.factory.annotation.Autowired
  * passes whether or not `InternalAuthFilter` is applied in this slice (the filter's own
  * behaviour is covered by `InternalAuthFilterTest`).
  */
-@WebMvcTest(controllers = [IngestController::class])
+@WebMvcTest(
+    controllers = [IngestController::class],
+    excludeFilters = [Filter(type = FilterType.ASSIGNABLE_TYPE, classes = [ConsoleWebConfig::class, ForcedPasswordChangeInterceptor::class])],
+)
 @Import(IngestControllerTest.TestConfig::class, SecurityConfig::class)
 @TestPropertySource(properties = ["INTERNAL_INGEST_TOKEN=test-token"])
 class IngestControllerTest @Autowired constructor(

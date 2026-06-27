@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Retry history</title></head>
+<body>
+<nav><a th:href="@{/admin/requests}">Requests</a> | <a th:href="@{/admin/history}">Retry history</a></nav>
+<h1>Retry history</h1>
+<p>Replay jobs and execution logs are available read-only via the HAL API:</p>
+<ul>
+    <li><a th:href="@{/api/replayJobs}">/api/replayJobs</a> — jobs (status, counts, triggered_by)</li>
+    <li><a th:href="@{/api/executionLogs}">/api/executionLogs</a> — per-request outcomes</li>
+    <li><a th:href="@{/api/explorer}">/api/explorer</a> — HAL explorer</li>
+</ul>
+</body>
+</html>
