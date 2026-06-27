@@ -91,11 +91,25 @@ class SpringDataRestIntegrationTest @Autowired constructor(
     fun `PUT capturedRequest is rejected with 405`() {
         val saved = capturedRequests.save(sampleCapturedEntity())
 
+        // A full, valid body so SDR gets past body deserialization to the method-not-allowed
+        // check (the body alone proves nothing — `save` is not exported, so PUT must be 405).
+        val body = """
+            {
+              "id": "${saved.id}",
+              "capturedAt": "2026-01-01T00:00:00Z",
+              "method": "PUT",
+              "uri": "https://example.com/changed",
+              "authority": "example.com",
+              "headersJson": "{}",
+              "body": null
+            }
+        """.trimIndent()
+
         mockMvc.perform(
             put("/api/capturedRequests/${saved.id}")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"),
+                .content(body),
         ).andExpect(status().isMethodNotAllowed)
     }
 
@@ -132,6 +146,7 @@ class SpringDataRestIntegrationTest @Autowired constructor(
 
     private fun configJson(name: String) = """
         {
+          "id": "${UUID.randomUUID()}",
           "name": "$name",
           "baseUrlOverride": "https://staging.example.com",
           "headerOverridesJson": "{}",
